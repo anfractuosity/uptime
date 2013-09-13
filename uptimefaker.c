@@ -95,6 +95,6 @@ static void __exit uptimefaker_cleanup(void) {
 	printk(KERN_INFO "Cleaning up module.\n");
 }
 
-//MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL");
 module_init(uptimefaker_init);
 module_exit(uptimefaker_cleanup);
