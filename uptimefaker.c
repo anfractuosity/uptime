@@ -28,16 +28,12 @@ static int __init uptimefaker_init(void) {
 	unsigned long flags;
 	printk(KERN_INFO "UptimeFaker\n");
 
-	printk("Jiffies before %lx\n", jiffies_64);
 	char our_thread[8] = "thread1";
-	printk(KERN_INFO "in init");
 	thread1 = kthread_create(thread_fn, NULL, our_thread);
 	if ((thread1)) {
-		printk(KERN_INFO "in if");
 		wake_up_process(thread1);
 	}
 
-	printk("Jiffies after %lx\n", jiffies_64);
 	return 0;	
 }
 
@@ -53,7 +49,7 @@ static void disable_page_protection(void) {
 }
 
 static int patchee(struct seq_file *m, void *v) {
-	printk("PATCHEEEEEEEEEEEEEEE\n");
+	printk("In our module faking that uptime...\n");
 	seq_printf(m, "18738072.28 74817307.16\n");
 	return 0;
 }
@@ -71,9 +67,8 @@ void patchme(void *addr) {
 		ops[i + 3] = (unsigned char)((char *)(&val))[i];
 		printk("Addr: %x\n", ops[i + 3]);
 	}
-	printk("FULL ADDR: %lx\n", patchee);
+	
 	unsigned char *c = (unsigned char *)addr;
-
 	for (i = 0; i < 13; i++) {
 		c[i] = ops[i];
 	}
@@ -81,13 +76,12 @@ void patchme(void *addr) {
 }
 
 int thread_fn() {
-	printk(KERN_INFO "In thread1\n-------------\n");
 	disable_page_protection();
+	
 	patchme(0xffffffff811b1c00);
-	printk(KERN_INFO "\n------------\n");
-
 	msleep(2);
 	schedule();
+
 	return 0;
 }
 
